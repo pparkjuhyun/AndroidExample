@@ -14,8 +14,8 @@ class ContactAdapter(val contactItemClick: (Contact) -> Unit, val contactItemLon
     private var contacts: List<Contact> = listOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.contact_list_item, parent, false)
-        return ContactViewHolder(view)
+        val binding: ContactListItemBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.contact_list_item, parent, false)
+        return ContactViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ContactViewHolder, position: Int) {
@@ -26,20 +26,19 @@ class ContactAdapter(val contactItemClick: (Contact) -> Unit, val contactItemLon
         return contacts.size
     }
 
-    inner class ContactViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-        private val tvInitial = itemView.findViewById<TextView>(R.id.tv_initial)
-        private val tvName = itemView.findViewById<TextView>(R.id.tv_name)
-        private val tvNumber = itemView.findViewById<TextView>(R.id.tv_number)
+    inner class ContactViewHolder(binding: ContactListItemBinding): RecyclerView.ViewHolder(binding.root) {
+
+        private val binding: ContactListItemBinding = binding
 
         fun bind(contact: Contact) {
-            tvInitial.text = contact.initial.toString()
-            tvName.text = contact.name
-            tvNumber.text = contact.number
+            binding.tvInitial.text = contact.initial.toString()
+            binding.tvName.text = contact.name
+            binding.tvNumber.text = contact.number
 
-            itemView.setOnClickListener {
+            binding.cvContactItem.setOnClickListener {
                 contactItemClick(contact)
             }
-            itemView.setOnLongClickListener {
+            binding.cvContactItem.setOnLongClickListener {
                 contactItemLongClick(contact)
                 true
             }
