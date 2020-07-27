@@ -17,6 +17,7 @@ class MainActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        binding.lifecycleOwner = this
 
         //ViewModel의 LiveData객체를 subscribe할 Observer 객체 생성
         val nameObserver = Observer<String> {
