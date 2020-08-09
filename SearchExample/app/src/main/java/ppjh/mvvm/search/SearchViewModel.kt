@@ -8,6 +8,6 @@ class SearchViewModel(private val repository: SearchRepository): ViewModel() {
     val users: MutableLiveData<ArrayList<User>> = MutableLiveData()
 
     fun search() {
-        
+
     }
 }
