@@ -1,11 +1,12 @@
 package ppjh.mvvm.roomexamplekotlin
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 
 @Dao
 interface TodoDao {
     @Query("SELECT * FROM TODO")
-    fun getAll(): List<Todo>
+    fun getAll(): LiveData<List<Todo>>
 
     @Insert
     fun insert(todo: Todo)
