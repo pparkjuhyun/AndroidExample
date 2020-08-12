@@ -34,7 +34,12 @@ public class MainActivity extends AppCompatActivity {
 //        db.todoDao().getAll().observe(this, todos -> {
 //            mResultTextView.setText(todos.toString());
 //        });
-        MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        //old version
+//        MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        MainViewModel viewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication())).get(MainViewModel.class);
+
+        //일반 뷰모델의 경우
+//        MainViewModel viewModel = new ViewModelProvider(this).get(MainViewModel.class);
 
         viewModel.getAll().observe(this, todos -> mResultTextView.setText(todos.toString()));
 
