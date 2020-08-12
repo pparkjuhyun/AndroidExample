@@ -2,6 +2,7 @@ package ppjh.mvvm.roomexamplekotlin
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
@@ -11,6 +12,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
+    //new version for getting viewmodel
+    val viewModel: MainViewModel by viewModels()
+//    val viewModel by viewModels<MainViewModel>()  //위랑 똑같음
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -19,7 +24,8 @@ class MainActivity : AppCompatActivity() {
 //                .allowMainThreadQueries()
 //                .build()
 
-        val viewModel = ViewModelProviders.of(this)[MainViewModel::class.java]
+        //old version
+//        val viewModel = ViewModelProviders.of(this)[MainViewModel::class.java]
 //        val viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
 
         //LiveData를 적용해 LiveDataList를 return받고 해당 데이터를 observe해 publish할때마다 뷰 업데이트
