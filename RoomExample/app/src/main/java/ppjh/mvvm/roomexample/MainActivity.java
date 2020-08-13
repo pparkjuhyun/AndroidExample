@@ -36,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
 //        });
         //old version
 //        MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+
+        //ViewModelProviders.of() method는 deprecated. jetpack의 ViewModel dependency를 추가해 ViewModelProvider로 인스턴스를 받아야함
         MainViewModel viewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication())).get(MainViewModel.class);
 
         //일반 뷰모델의 경우
