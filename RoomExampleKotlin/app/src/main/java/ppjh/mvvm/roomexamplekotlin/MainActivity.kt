@@ -37,6 +37,7 @@ class MainActivity : AppCompatActivity() {
 //            db.todoDao().insert(Todo(todo_edit.text.toString()))
             //LiveData 적용을 통해 업데이트 후 뷰 업데이트 삭제
 //            result_text.text = db.todoDao().getAll().toString()
+            //coroutine을 이용해 async트랜잭션 처리
             lifecycleScope.launch(Dispatchers.IO) {
                 viewModel.insert(Todo(todo_edit.text.toString()))
             }
