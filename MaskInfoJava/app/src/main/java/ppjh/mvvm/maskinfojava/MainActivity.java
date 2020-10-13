@@ -5,15 +5,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import ppjh.mvvm.maskinfojava.model.Store;
 import ppjh.mvvm.maskinfojava.model.StoreInfo;
@@ -46,7 +51,10 @@ public class MainActivity extends AppCompatActivity {
         storeInfoCall.enqueue(new Callback<StoreInfo>() {
             @Override
             public void onResponse(Call<StoreInfo> call, Response<StoreInfo> response) {
-                adapter.updateItems(response.body().getStores());
+                Log.e("ppjh", "onResponse: Refresh");
+                List<Store> items = response.body().getStores();
+                adapter.updateItems(items.stream().filter(item -> item.getRemainStat() != null).collect(Collectors.toList()));
+                getSupportActionBar().setTitle("마스크 재고 있는 곳: " + adapter.getItemCount());
             }
 
             @Override
@@ -54,6 +62,23 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("ppjh", "onFailure: " + t.getMessage());
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_refresh:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }
 
@@ -73,8 +98,37 @@ class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.StoreViewHolder> {
         holder.tvName.setText(store.getName());
         holder.tvAddr.setText(store.getAddr());
         holder.tvDistance.setText("123km");
-        holder.tvRemainStat.setText(store.getRemainStat());
-        holder.tvCount.setText("100개 이상");
+
+        String count = "100개 이상";
+        String remainStat = "충분";
+        int color = Color.GREEN;
+
+        switch (store.getRemainStat()) {
+            case "plenty":
+                count = "100개 이상";
+                remainStat = "충분";
+                color = Color.GREEN;
+                break;
+            case "some":
+                count = "30개 이상";
+                remainStat = "여유";
+                color = Color.YELLOW;
+                break;
+            case "few":
+                count = "2개 이상";
+                remainStat = "매진 임박";
+                color = Color.RED;
+                break;
+            case "empty":
+                count = "1개 이하";
+                remainStat = "재고 없음";
+                color = Color.GRAY;
+                break;
+        }
+        holder.tvRemainStat.setText(remainStat);
+        holder.tvRemainStat.setTextColor(color);
+        holder.tvCount.setText(count);
+        holder.tvCount.setTextColor(color);
     }
 
     @Override
