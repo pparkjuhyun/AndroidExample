@@ -3,7 +3,7 @@ package ppjh.mvvm.maskinfojava.model;
 
 import com.squareup.moshi.Json;
 
-public class Store {
+public class Store implements Comparable<Store> {
 
     @Json(name = "addr")
     private String addr;
@@ -23,6 +23,8 @@ public class Store {
     private String stockAt;
     @Json(name = "type")
     private String type;
+    @Json(name = "distance")
+    private double distance;
 
     public String getAddr() {
         return addr;
@@ -96,4 +98,16 @@ public class Store {
         this.type = type;
     }
 
+    public double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(double distance) {
+        this.distance = distance;
+    }
+
+    @Override
+    public int compareTo(Store o) {
+        return Double.compare(this.distance, o.distance);
+    }
 }

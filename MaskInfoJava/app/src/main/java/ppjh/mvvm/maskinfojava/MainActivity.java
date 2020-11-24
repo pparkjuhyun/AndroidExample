@@ -146,7 +146,7 @@ class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.StoreViewHolder> {
         Store store = mItems.get(position);
         holder.tvName.setText(store.getName());
         holder.tvAddr.setText(store.getAddr());
-        holder.tvDistance.setText("123km");
+        holder.tvDistance.setText(String.format("%.2fkm", store.getDistance()));
 
         String count = "100개 이상";
         String remainStat = "충분";

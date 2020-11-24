@@ -1,6 +1,7 @@
 package ppjh.mvvm.maskinfojava.viewmodel;
 
 import android.location.Location;
+import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 import ppjh.mvvm.maskinfojava.model.Store;
 import ppjh.mvvm.maskinfojava.model.StoreInfo;
 import ppjh.mvvm.maskinfojava.repository.MaskService;
+import ppjh.mvvm.maskinfojava.util.LocationDistance;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -40,10 +42,20 @@ public class MainViewModel extends ViewModel {
             @Override
             public void onResponse(Call<StoreInfo> call, Response<StoreInfo> response) {
                 Log.d("ppjh", "refresh");
-                List<Store> items = response.body().getStores();
-                itemLiveData.postValue(items.stream()
+                List<Store> items = response.body().getStores()
+                .stream()
                         .filter(item -> item.getRemainStat() != null)
-                        .collect(Collectors.toList()));
+                        .filter(item -> !TextUtils.equals(item.getRemainStat(), "empty"))
+                        .collect(Collectors.toList());
+
+                for(Store store : items) {
+                    double dist = LocationDistance.distance(location.getLatitude(), location.getLongitude(), store.getLat(), store.getLng(), "k");
+                    store.setDistance(dist);
+                }
+
+                Collections.sort(items);
+
+                itemLiveData.postValue(items);
             }
 
             @Override
