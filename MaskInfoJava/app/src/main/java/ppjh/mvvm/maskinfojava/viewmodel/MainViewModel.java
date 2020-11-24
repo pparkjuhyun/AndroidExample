@@ -1,5 +1,6 @@
 package ppjh.mvvm.maskinfojava.viewmodel;
 
+import android.location.Location;
 import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
@@ -21,6 +22,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory;
 
 public class MainViewModel extends ViewModel {
     private MutableLiveData<List<Store>> itemLiveData = new MutableLiveData<>();
+    private Location location;
 
     private Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(MaskService.BASE_URL)
@@ -28,14 +30,13 @@ public class MainViewModel extends ViewModel {
             .build();
 
     private MaskService service = retrofit.create(MaskService.class);
-    private Call<StoreInfo> storeInfoCall = service.fetchStoreInfo();
 
     public MainViewModel() {
-        fetchStoreInfo();
+//        fetchStoreInfo();
     }
 
     public void fetchStoreInfo() {
-        storeInfoCall.clone().enqueue(new Callback<StoreInfo>() {
+        service.fetchStoreInfo(location.getLatitude(), location.getLongitude()).enqueue(new Callback<StoreInfo>() {
             @Override
             public void onResponse(Call<StoreInfo> call, Response<StoreInfo> response) {
                 Log.d("ppjh", "refresh");
@@ -58,5 +59,13 @@ public class MainViewModel extends ViewModel {
 
     public void setItemLiveData(MutableLiveData<List<Store>> itemLiveData) {
         this.itemLiveData = itemLiveData;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
     }
 }

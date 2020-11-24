@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        viewModel = new ViewModelProvider(this).get(MainViewModel.class);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         PermissionListener permissionlistener = new PermissionListener() {
             @Override
@@ -77,10 +78,20 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("MissingPermission")
     private void performAction() {
-        fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+        fusedLocationClient.getLastLocation()
+                .addOnFailureListener(this, e -> {
+                    Log.e("ppjh", e.getCause().toString());
+                })
+                .addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
+                if(location != null) {
+                    Log.d("ppjh", "getLatitude: " + location.getLatitude());
+                    Log.d("ppjh", "getLongitude: " + location.getLongitude());
 
+                    viewModel.setLocation(location);
+                    viewModel.fetchStoreInfo();
+                }
             }
         });
 
@@ -88,8 +99,6 @@ public class MainActivity extends AppCompatActivity {
         rvStore.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         final StoreAdapter adapter = new StoreAdapter();
         rvStore.setAdapter(adapter);
-
-        viewModel = new ViewModelProvider(this).get(MainViewModel.class);
 
         /**
          * UI 변경 감지
@@ -101,8 +110,6 @@ public class MainActivity extends AppCompatActivity {
                 getSupportActionBar().setTitle("마스크 재고 있는 곳: " + stores.size());
             }
         });
-
-        viewModel.fetchStoreInfo();
     }
 
     @Override
