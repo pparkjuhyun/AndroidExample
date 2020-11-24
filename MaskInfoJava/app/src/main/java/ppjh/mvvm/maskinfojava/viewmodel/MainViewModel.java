@@ -24,6 +24,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory;
 
 public class MainViewModel extends ViewModel {
     private MutableLiveData<List<Store>> itemLiveData = new MutableLiveData<>();
+    private MutableLiveData<Boolean> loadingLiveData = new MutableLiveData<>();
     private Location location;
 
     private Retrofit retrofit = new Retrofit.Builder()
@@ -38,6 +39,9 @@ public class MainViewModel extends ViewModel {
     }
 
     public void fetchStoreInfo() {
+        //loading start
+        loadingLiveData.setValue(true);
+
         service.fetchStoreInfo(location.getLatitude(), location.getLongitude()).enqueue(new Callback<StoreInfo>() {
             @Override
             public void onResponse(Call<StoreInfo> call, Response<StoreInfo> response) {
@@ -56,11 +60,15 @@ public class MainViewModel extends ViewModel {
                 Collections.sort(items);
 
                 itemLiveData.postValue(items);
+                //loading end
+                loadingLiveData.postValue(false);
             }
 
             @Override
             public void onFailure(Call<StoreInfo> call, Throwable t) {
                 itemLiveData.postValue(Collections.emptyList());
+                //loading end
+                loadingLiveData.postValue(false);
             }
         });
     }
@@ -79,5 +87,13 @@ public class MainViewModel extends ViewModel {
 
     public void setLocation(Location location) {
         this.location = location;
+    }
+
+    public MutableLiveData<Boolean> getLoadingLiveData() {
+        return loadingLiveData;
+    }
+
+    public void setLoadingLiveData(MutableLiveData<Boolean> loadingLiveData) {
+        this.loadingLiveData = loadingLiveData;
     }
 }

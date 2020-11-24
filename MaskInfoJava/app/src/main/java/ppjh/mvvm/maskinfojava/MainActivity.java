@@ -21,6 +21,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,13 +49,14 @@ public class MainActivity extends AppCompatActivity {
 
     private MainViewModel viewModel;
     private FusedLocationProviderClient fusedLocationClient;
-
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        progressBar = findViewById(R.id.pb_loading);
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         PermissionListener permissionlistener = new PermissionListener() {
@@ -108,6 +110,14 @@ public class MainActivity extends AppCompatActivity {
             public void onChanged(List<Store> stores) {
                 adapter.updateItems(stores);
                 getSupportActionBar().setTitle("마스크 재고 있는 곳: " + stores.size());
+            }
+        });
+
+        viewModel.getLoadingLiveData().observe(this, isLoading -> {
+            if(isLoading) {
+                progressBar.setVisibility(View.VISIBLE);
+            } else {
+                progressBar.setVisibility(View.GONE);
             }
         });
     }
