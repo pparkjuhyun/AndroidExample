@@ -2,6 +2,8 @@ package ppjh.mvvm.maskinfojava;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 import ppjh.mvvm.maskinfojava.model.Store;
 import ppjh.mvvm.maskinfojava.model.StoreInfo;
 import ppjh.mvvm.maskinfojava.repository.MaskService;
+import ppjh.mvvm.maskinfojava.viewmodel.MainViewModel;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -30,6 +33,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.moshi.MoshiConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
+
+    private MainViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,27 +46,20 @@ public class MainActivity extends AppCompatActivity {
         final StoreAdapter adapter = new StoreAdapter();
         rvStore.setAdapter(adapter);
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(MaskService.BASE_URL)
-                .addConverterFactory(MoshiConverterFactory.create())
-                .build();
+        viewModel = new ViewModelProvider(this).get(MainViewModel.class);
 
-        MaskService service = retrofit.create(MaskService.class);
-        Call<StoreInfo> storeInfoCall = service.fetchStoreInfo();
-        storeInfoCall.enqueue(new Callback<StoreInfo>() {
+        /**
+         * UI 변경 감지
+         */
+        viewModel.getItemLiveData().observe(this, new Observer<List<Store>>() {
             @Override
-            public void onResponse(Call<StoreInfo> call, Response<StoreInfo> response) {
-                Log.e("ppjh", "onResponse: Refresh");
-                List<Store> items = response.body().getStores();
-                adapter.updateItems(items.stream().filter(item -> item.getRemainStat() != null).collect(Collectors.toList()));
-                getSupportActionBar().setTitle("마스크 재고 있는 곳: " + adapter.getItemCount());
-            }
-
-            @Override
-            public void onFailure(Call<StoreInfo> call, Throwable t) {
-                Log.e("ppjh", "onFailure: " + t.getMessage());
+            public void onChanged(List<Store> stores) {
+                adapter.updateItems(stores);
+                getSupportActionBar().setTitle("마스크 재고 있는 곳: " + stores.size());
             }
         });
+
+        viewModel.fetchStoreInfo();
     }
 
     @Override
@@ -75,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_refresh:
+                viewModel.fetchStoreInfo();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
