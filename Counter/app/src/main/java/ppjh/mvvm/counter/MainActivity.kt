@@ -33,36 +33,15 @@ class MainActivity : AppCompatActivity() {
             viewModel.count--
             tv_counter.text = "${viewModel.count}"
         }
+    }
 
-        registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
-            override fun onActivityPaused(activity: Activity) {
-                Log.d(TAG, "onActivityPaused: ")
-            }
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt("count", viewModel.count)
+    }
 
-            override fun onActivityStarted(activity: Activity) {
-                Log.d(TAG, "onActivityStarted: ")
-            }
-
-            override fun onActivityDestroyed(activity: Activity) {
-                Log.d(TAG, "onActivityDestroyed: ")
-            }
-
-            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {
-                Log.d(TAG, "onActivitySaveInstanceState: ")
-            }
-
-            override fun onActivityStopped(activity: Activity) {
-                Log.d(TAG, "onActivityStopped: ")
-            }
-
-            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-                Log.d(TAG, "onActivityCreated: ")
-            }
-
-            override fun onActivityResumed(activity: Activity) {
-                Log.d(TAG, "onActivityResumed: ")
-            }
-
-        })
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        viewModel.count = savedInstanceState.getInt("count")
     }
 }
